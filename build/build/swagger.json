@@ -1,0 +1,242 @@
+{
+    "components": {
+        "examples": {},
+        "headers": {},
+        "parameters": {},
+        "requestBodies": {},
+        "responses": {},
+        "schemas": {
+            "Product": {
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
+            "Pick_Product.name_": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "description": "From T, pick a set of properties whose keys are in the union K"
+            },
+            "ProductCreationParams": {
+                "$ref": "#/components/schemas/Pick_Product.name_"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "Happy",
+                            "Sad"
+                        ]
+                    },
+                    "phoneNumbers": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "email",
+                    "name",
+                    "phoneNumbers"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
+            "Pick_User.email-or-name-or-phoneNumbers_": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "phoneNumbers": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "phoneNumbers"
+                ],
+                "type": "object",
+                "description": "From T, pick a set of properties whose keys are in the union K"
+            },
+            "UserCreationParams": {
+                "$ref": "#/components/schemas/Pick_User.email-or-name-or-phoneNumbers_"
+            }
+        },
+        "securitySchemes": {}
+    },
+    "info": {
+        "title": "ingredient-cart",
+        "version": "1.0.0",
+        "license": {
+            "name": "MIT"
+        },
+        "contact": {
+            "name": "Jack Himes ",
+            "email": "jack.himes3246@gmail.com"
+        }
+    },
+    "openapi": "3.0.0",
+    "paths": {
+        "/products/{productId}": {
+            "get": {
+                "operationId": "GetProduct",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "productId",
+                        "required": true,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        "/products": {
+            "post": {
+                "operationId": "CreateProduct",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProductCreationParams"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "get": {
+                "operationId": "GetUser",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "required": true,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        "/users": {
+            "post": {
+                "operationId": "CreateUser",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserCreationParams"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ]
+}
