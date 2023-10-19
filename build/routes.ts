@@ -13,23 +13,96 @@ import type { RequestHandler, Router } from 'express';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "Location": {
+    "Address": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"double","required":true},
-            "name": {"dataType":"string","required":true},
+            "addressLine1": {"dataType":"string","required":true},
+            "city": {"dataType":"string","required":true},
+            "state": {"dataType":"string","required":true},
+            "zipCode": {"dataType":"string","required":true},
+            "county": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_Location.name_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true}},"validators":{}},
+    "Geolocation": {
+        "dataType": "refObject",
+        "properties": {
+            "latitude": {"dataType":"double","required":true},
+            "longitude": {"dataType":"double","required":true},
+            "latLng": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "LocationCreationParams": {
-        "dataType": "refAlias",
-        "type": {"ref":"Pick_Location.name_","validators":{}},
+    "Hours": {
+        "dataType": "refObject",
+        "properties": {
+            "open": {"dataType":"string","required":true},
+            "close": {"dataType":"string","required":true},
+            "open24": {"dataType":"boolean","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LocationHours": {
+        "dataType": "refObject",
+        "properties": {
+            "timezone": {"dataType":"string","required":true},
+            "gmtOffset": {"dataType":"string","required":true},
+            "open24": {"dataType":"boolean","required":true},
+            "monday": {"ref":"Hours","required":true},
+            "tuesday": {"ref":"Hours","required":true},
+            "wednesday": {"ref":"Hours","required":true},
+            "thursday": {"ref":"Hours","required":true},
+            "friday": {"ref":"Hours","required":true},
+            "saturday": {"ref":"Hours","required":true},
+            "sunday": {"ref":"Hours","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DepartmentHours": {
+        "dataType": "refObject",
+        "properties": {
+            "open24": {"dataType":"boolean","required":true},
+            "monday": {"ref":"Hours","required":true},
+            "tuesday": {"ref":"Hours","required":true},
+            "wednesday": {"ref":"Hours","required":true},
+            "thursday": {"ref":"Hours","required":true},
+            "friday": {"ref":"Hours","required":true},
+            "saturday": {"ref":"Hours","required":true},
+            "sunday": {"ref":"Hours","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Department": {
+        "dataType": "refObject",
+        "properties": {
+            "departmentId": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "hours": {"ref":"DepartmentHours"},
+            "phone": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Location": {
+        "dataType": "refObject",
+        "properties": {
+            "locationId": {"dataType":"string","required":true},
+            "storeNumber": {"dataType":"string","required":true},
+            "divisionNumber": {"dataType":"string","required":true},
+            "chain": {"dataType":"string","required":true},
+            "address": {"ref":"Address","required":true},
+            "geolocation": {"ref":"Geolocation","required":true},
+            "name": {"dataType":"string","required":true},
+            "hours": {"ref":"LocationHours","required":true},
+            "phone": {"dataType":"string","required":true},
+            "departments": {"dataType":"array","array":{"dataType":"refObject","ref":"Department"},"required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Product": {
@@ -85,9 +158,9 @@ export function RegisterRoutes(app: Router) {
     // ###########################################################################################################
         app.get('/locations',
             ...(fetchMiddlewares<RequestHandler>(LocationsController)),
-            ...(fetchMiddlewares<RequestHandler>(LocationsController.prototype.getLocation)),
+            ...(fetchMiddlewares<RequestHandler>(LocationsController.prototype.getLocations)),
 
-            function LocationsController_getLocation(request: any, response: any, next: any) {
+            function LocationsController_getLocations(request: any, response: any, next: any) {
             const args = {
             };
 
@@ -100,33 +173,8 @@ export function RegisterRoutes(app: Router) {
                 const controller = new LocationsController();
 
 
-              const promise = controller.getLocation.apply(controller, validatedArgs as any);
+              const promise = controller.getLocations.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/locations',
-            ...(fetchMiddlewares<RequestHandler>(LocationsController)),
-            ...(fetchMiddlewares<RequestHandler>(LocationsController.prototype.createLocation)),
-
-            function LocationsController_createLocation(request: any, response: any, next: any) {
-            const args = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"LocationCreationParams"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new LocationsController();
-
-
-              const promise = controller.createLocation.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, 201, next);
             } catch (err) {
                 return next(err);
             }
