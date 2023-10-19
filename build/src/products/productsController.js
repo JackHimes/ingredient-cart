@@ -50,3 +50,4 @@ __decorate([
 exports.ProductsController = ProductsController = __decorate([
     (0, tsoa_1.Route)("products")
 ], ProductsController);
+//# sourceMappingURL=productsController.js.map

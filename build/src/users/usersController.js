@@ -50,3 +50,4 @@ __decorate([
 exports.UsersController = UsersController = __decorate([
     (0, tsoa_1.Route)("users")
 ], UsersController);
+//# sourceMappingURL=usersController.js.map

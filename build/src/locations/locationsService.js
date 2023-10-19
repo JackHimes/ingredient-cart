@@ -28,3 +28,4 @@ class LocationsService {
     }
 }
 exports.LocationsService = LocationsService;
+//# sourceMappingURL=locationsService.js.map

@@ -13,7 +13,8 @@
       ],
       "preLaunchTask": "npm: build",
       "program": "${workspaceFolder}/build/src/server.js",
-      "outFiles": ["${workspaceFolder}/out/**/*.js"]
+      "outFiles": ["${workspaceFolder}/build/**/*.js"],
+      "sourceMaps": true,
     }
   ]
 }

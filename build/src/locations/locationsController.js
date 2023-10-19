@@ -35,3 +35,4 @@ __decorate([
 exports.LocationsController = LocationsController = __decorate([
     (0, tsoa_1.Route)("locations")
 ], LocationsController);
+//# sourceMappingURL=locationsController.js.map

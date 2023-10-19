@@ -5,6 +5,7 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "build",
+    "sourceMap": true,
 
     /* Strict Type-Checking Options */
     "strict": true,
