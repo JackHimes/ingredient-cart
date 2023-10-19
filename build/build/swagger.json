@@ -6,6 +6,38 @@
         "requestBodies": {},
         "responses": {},
         "schemas": {
+            "Location": {
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
+            "Pick_Location.name_": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "description": "From T, pick a set of properties whose keys are in the union K"
+            },
+            "LocationCreationParams": {
+                "$ref": "#/components/schemas/Pick_Location.name_"
+            },
             "Product": {
                 "properties": {
                     "id": {
@@ -115,6 +147,45 @@
     },
     "openapi": "3.0.0",
     "paths": {
+        "/locations": {
+            "get": {
+                "operationId": "GetLocation",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Location"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [],
+                "parameters": []
+            },
+            "post": {
+                "operationId": "CreateLocation",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                },
+                "security": [],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LocationCreationParams"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/products/{productId}": {
             "get": {
                 "operationId": "GetProduct",
