@@ -4,7 +4,7 @@ import {
   Get,
   // Path,
   //Post,
-  // Query,
+  Query,
   Route,
 } from "tsoa";
 import { Location } from "./location";
@@ -14,9 +14,8 @@ import { LocationsService } from "./locationsService";
 export class LocationsController extends Controller {
   @Get()
   public async getLocations(
-    // @Path() locationId: number,
-    // @Query() name?: string
+    @Query() zipCode: string | number,
   ): Promise<Location[]> {
-    return new LocationsService().getLocations();
+    return new LocationsService().getLocations(zipCode);
   }
 }
