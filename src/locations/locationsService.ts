@@ -1,5 +1,8 @@
 import { Location } from "./location";
 import axios, { AxiosResponse } from "axios";
+import MongoService from "../services/mongoService";
+import { ObjectId } from "mongodb";
+
 
 export type LocationCreationParams = Pick<Location, "name" >;
 export type LocationParams = {
@@ -25,6 +28,14 @@ export class LocationsService {
     );
 
     return response.data.data;
+  }
+ 
+  public async getLocation(id: string): Promise<Location | null> {
+    let db: any = await new MongoService().connect();
+
+    let location: any = await db.collection("locations").findOne({_id: new ObjectId(id)});
+
+    return location ? location as Location : null;
   }
 
   // public create(locationCreationParams: LocationCreationParams): Location {

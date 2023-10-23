@@ -18,4 +18,11 @@ export class LocationsController extends Controller {
   ): Promise<Location[]> {
     return new LocationsService().getLocations(zipCode);
   }
+
+  @Get("{id}")
+  public async getLocation(
+    id: string
+  ): Promise<Location | null > {
+    return new LocationsService().getLocation(id);
+  }
 }
