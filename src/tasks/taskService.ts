@@ -3,15 +3,22 @@ import { TaskResult } from "./task";
 
 
 export class TaskService {
-  public async runScript(scriptName: string): Promise<TaskResult> {
-    return await this.runPythonScript(scriptName);
+  public async runScript(scriptName: string, recipeUrl?: string): Promise<TaskResult> {
+    let result: TaskResult
+    try {
+      result = await this.runPythonScript(scriptName, recipeUrl); 
+    } catch (error) {
+      result = { result: error }
+    }
+
+    return result
   }
 
-  private runPythonScript(scriptName: string): Promise<TaskResult> {
+  private runPythonScript(scriptName: string, recipeUrl = 'https://www.allrecipes.com/recipe/158968/spinach-and-feta-turkey-burgers/'): Promise<TaskResult> {
     return new Promise((resolve, reject) => {
       let result: any;
 
-      const python = spawn('python3', [`./src/tasks/scripts/${scriptName}.py`]);
+      const python = spawn('python3', [`./src/tasks/scripts/${scriptName}.py`, recipeUrl]);
 
       python.stdout.on('data', function (data) {
         console.log('Pipe data from python script ...');

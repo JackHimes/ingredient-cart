@@ -1,5 +1,6 @@
+import sys 
 from recipe_scrapers import scrape_me
 
-scraper = scrape_me('https://www.allrecipes.com/recipe/158968/spinach-and-feta-turkey-burgers/')
+scraper = scrape_me(sys.argv[1])
 
-print(scraper.to_json())
+print({"ingredients": scraper.ingredients()})
