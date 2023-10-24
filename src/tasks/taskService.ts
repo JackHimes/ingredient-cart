@@ -15,7 +15,7 @@ export class TaskService {
 
       python.stdout.on('data', function (data) {
         console.log('Pipe data from python script ...');
-        result = data.toString();
+        result = data.toString().replace(/'/g, '"').replace(/\n/g,'').replace('None', 'null');
       });
 
       python.on('error', (err) => {
@@ -25,7 +25,7 @@ export class TaskService {
   
       python.on('close', (code) => {
         console.log(`child process close all stdio with code ${code}`);
-        resolve({ result: result })
+        resolve({ result: JSON.parse(result) })
       });
     })
     
