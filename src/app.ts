@@ -2,6 +2,8 @@ import { RegisterRoutes } from "../build/routes";
 import express, { Response as ExResponse, Request as ExRequest, NextFunction, json, urlencoded } from "express";
 import swaggerUi from "swagger-ui-express";
 import { ValidateError } from "tsoa";
+import dotenv from "dotenv"
+// import verifyToken from "./middleware/verifyKrogerToken";
 // import { load } from 'ts-dotenv';
 // https://github.com/LeoBakerHytch/ts-dotenv 
 
@@ -15,6 +17,7 @@ app.use(
 );
 
 app.use(json());
+dotenv.config();
 
 app.use(function errorHandler(
   err: unknown,
@@ -37,6 +40,8 @@ app.use(function errorHandler(
 
   next();
 });
+
+// app.use(verifyToken)
 
 // Use body parser to read sent json payloads
 app.use("/docs", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
