@@ -1,18 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
-import { OAuth2Service, client_credentials } from '../generated/kroger-cli';
-import { OpenAPI } from '../generated/kroger-cli';
+import axios from 'axios';
 
 const logRequest = async (req: Request, res: Response, next: NextFunction) => {
-    OpenAPI.BASE = "https://api.kroger.com/v1"
-    OpenAPI.HEADERS = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    const baseURL = "https://api.kroger.com/v1";
+    const headers = { 
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic aW5ncmVkaWVudGNhcnQtNjE3NTRiN2JkYTBiZWUxNzRkZTVlYzdjNDZlNTM1MWM2OTY5NDY4NjAwMDczMjYzOTAwOmN6MHV4cXBmTk9keG5tUU5KR2JldDhDN1dQSXJPZmVCOUljUTF6Vmg='
+    };
 
-    let result = await OAuth2Service.accessToken(
-        process.env.KROGER_API_TOKEN as string,
-        new URLSearchParams( {
-            "grant_type": "client_credentials",
-            "scope": client_credentials.scope.PRODUCT_BASIC
-        }).toString() as unknown as client_credentials)
-    console.log(result);
+    try {
+        const response = await axios.post(
+            `${baseURL}/connect/oauth2/token`,
+            new URLSearchParams({
+                "grant_type": "client_credentials",
+                "scope": "profile.compact"
+            }).toString(),
+            { headers } 
+        )
+        const result = response.data
+        console.log(result);
+    } catch (error) {
+        console.error("Error obtaining access token: ", error);
+    }
 
     // If no token, hit end point to get new token. Check for exisiting token on User
     console.log(`${req.method} ${req.url}`);
