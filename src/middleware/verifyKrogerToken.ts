@@ -5,7 +5,7 @@ const logRequest = async (req: Request, res: Response, next: NextFunction) => {
     const baseURL = "https://api.kroger.com/v1";
     const headers = { 
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic aW5ncmVkaWVudGNhcnQtNjE3NTRiN2JkYTBiZWUxNzRkZTVlYzdjNDZlNTM1MWM2OTY5NDY4NjAwMDczMjYzOTAwOmN6MHV4cXBmTk9keG5tUU5KR2JldDhDN1dQSXJPZmVCOUljUTF6Vmg='
+        'Authorization': process.env.KROGER_API_TOKEN
     };
 
     try {
