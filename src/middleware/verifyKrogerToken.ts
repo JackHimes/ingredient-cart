@@ -18,16 +18,20 @@ const logRequest = async (req: Request, res: Response, next: NextFunction) => {
             { headers } 
         )
         const result = response.data
+        // res.setHeader('kroger-authorization', result.access_token) 
         console.log(result);
+        (req as any).token = result.access_token
+        next();
+
     } catch (error) {
         console.error("Error obtaining access token: ", error);
+        res.status(500).json({ error: "Failed to obtain access token"})
+
     }
 
     // If no token, hit end point to get new token. Check for exisiting token on User
     console.log(`${req.method} ${req.url}`);
     console.log(`${res}`);
-    req.headers['whatever'] = "any string"
-    next();
 }
 
 export default logRequest;

@@ -2,13 +2,13 @@ import {
     Body,
     Controller,
     Get,
-    Header,
     Middlewares,
     Path,
     Post,
     Query,
     Route,
     SuccessResponse,
+    Request
   } from "tsoa";
   import { User } from "./user";
   import { UsersService, UserCreationParams } from "./usersService";
@@ -19,11 +19,13 @@ import {
     @Middlewares(verifyToken)
     @Get("{userId}")
     public async getUser(
+      @Request() req: Express.Request,
       @Path() userId: number,
       @Query() name?: string,
-      @Header("whatever") whateverHeader?: string
     ): Promise<User> {
-      console.log(whateverHeader)
+      const token = (req as any).token;
+      console.log(token);
+      
       return new UsersService().get(userId, name);
     }
   
