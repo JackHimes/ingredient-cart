@@ -1,15 +1,15 @@
-import * as mongoDB from "mongodb";
-// import * as dotenv from "dotenv";
+import { Db, MongoClient} from "mongodb";
+import { singleton } from "tsyringe";
 
-export default class MongoService {
-    client: mongoDB.MongoClient;
+@singleton()
+export class MongoService {
+    public client: MongoClient;
+    public db!: Db;
 
     constructor() {
-        this.client = new mongoDB.MongoClient("mongodb://localhost:27017/");
-     
+        this.client = new MongoClient(process.env.MONGO_DB_URL as string); 
     }
-    async connect(): Promise<mongoDB.Db> {
-        await this.client.connect();
-        return this.client.db("ingredient-cart");
+    public async connect(database: string): Promise<Db> {
+        return this.db = await this.client.db(database);
     }
 }

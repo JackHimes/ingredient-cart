@@ -1,7 +1,7 @@
 import { Location } from "./location";
 import axios, { AxiosResponse } from "axios";
-import MongoService from "../services/mongoService";
 import { ObjectId } from "mongodb";
+import { ApiService } from "../services/apiService";
 
 
 export type LocationCreationParams = Pick<Location, "name" >;
@@ -9,7 +9,11 @@ export type LocationParams = {
   'filter.zipCode.near'?: string | number
 }
 
-export class LocationsService {
+export class LocationsService extends ApiService {
+  constructor() {
+    super();
+  }
+
   public async getLocations(zipCode?: string | number): Promise<Location[]> {
     let params: LocationParams = {}
     if (zipCode) {
@@ -31,9 +35,8 @@ export class LocationsService {
   }
  
   public async getLocation(id: string): Promise<Location | null> {
-    let db: any = await new MongoService().connect();
 
-    let location: any = await db.collection("locations").findOne({_id: new ObjectId(id)});
+    let location: any = await this.db.collection("locations").findOne({_id: new ObjectId(id)});
 
     return location ? location as Location : null;
   }
