@@ -1,10 +1,11 @@
 import { ObjectId } from "mongodb";
 
 export type User = {
-    id: ObjectId;
+    _id: ObjectId;
     email: string;
     name: string;
-    status?: "Happy" | "Sad";
+    password: string;
+    verified?: boolean;
     phoneNumbers: string[];
   }
 

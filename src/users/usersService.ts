@@ -1,5 +1,8 @@
+import { ObjectId } from "mongodb";
 import { ApiService } from "../services/apiService";
-import { User, UserQueryParams } from "./user";
+import { User, UserCreationParams, UserQueryParams, UserUpdateParams } from "./user";
+import { hash } from "bcrypt";
+import  ApiError  from "../lib/ApiError";
 
 // A post request should not contain an id.
 
@@ -14,21 +17,56 @@ export class UsersService extends ApiService {
     return users as unknown as User[];
   }
 
-  // public get(id: number, name?: string): User {
-  //   return {
-  //     id,
-  //     email: "jane@doe.com",
-  //     name: name ?? "Jane Doe",
-  //     status: "Happy",
-  //     phoneNumbers: [],
-  //   };
-  // }
+  public async get(id: string, name?: string): Promise<User> {
+    let query: UserQueryParams = { _id: new ObjectId(id) };
+    if (name) {
+      query = { ...query, name: name };
+    }
 
-  // public create(userCreationParams: UserCreationParams): User {
-  //   return {
-  //     id: Math.floor(Math.random() * 10000), // Random
-  //     status: "Happy",
-  //     ...userCreationParams,
-  //   };
-  // }
+    let result = (await this.db
+      .collection("users")
+      .findOne(query)) as unknown as User;
+
+    return result;
+  }
+
+  public async create(userCreationParams: UserCreationParams): Promise<User> {
+    let user = (await this.db.collection("users").findOne({ email: userCreationParams.email }))
+
+    if(!user){
+      userCreationParams.password = await hash(userCreationParams.password as string, 10);
+
+      await this.db.collection("users").insertOne({
+        ...userCreationParams,
+        verified: false
+      });
+      return {
+        ...userCreationParams,
+        verified: false
+      } as User;
+    } else {
+      throw new ApiError("DuplicateEmail", 400, "Email Already Exists")
+    }
+  }
+
+  public async update(
+    id: string,
+    userUpdateParams: UserUpdateParams
+  ): Promise<void> {
+    if (userUpdateParams.password) {
+      userUpdateParams.password = await hash(userUpdateParams.password, 10);
+    }
+
+    await this.db
+    .collection("users")
+    .updateOne({ id: new ObjectId(id) }, { $set: { ...userUpdateParams } });
+
+    return;
+  }
+
+  public async delete(id: string): Promise<void> {
+    await this.db.collection("users").deleteOne({ id: new ObjectId(id) });
+    
+    return
+  }
 }

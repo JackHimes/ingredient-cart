@@ -1,21 +1,22 @@
 import {
-    // Body,
+    Body,
     Controller,
     Get,
-    // Middlewares,
-    // Path,
-    // Post,
+    Middlewares,
+    Path,
+    Post,
     Query,
     Route,
-    // SuccessResponse,
-    // Request
+    SuccessResponse,
+    Request
   } from "tsoa";
-  import { User, UserQueryParams } from "./user";
+  import { User, UserCreationParams, UserQueryParams } from "./user";
   import { UsersService } from "./usersService";
-  // import verifyToken from "../middleware/verifyKrogerToken";
+  import verifyToken from "../middleware/verifyKrogerToken";
 
   @Route("users")
   export class UsersController extends Controller {
+
     @Get()
     public async findUsers(@Query() email?: string): Promise<User[]> {
       let query: UserQueryParams = {};
@@ -25,26 +26,27 @@ import {
       const usersService = new UsersService
       return await usersService.find(query);
     }
-    // @Middlewares(verifyToken)
-    // @Get("{userId}")
-    // public async getUser(
-    //   @Request() req: Express.Request,
-    //   @Path() userId: number,
-    //   @Query() name?: string,
-    // ): Promise<User> {
-    //   const token = (req as any).token;
-    //   console.log(token);
+
+    @Middlewares(verifyToken)
+    @Get("{userId}")
+    public async getUser(
+      @Request() req: Express.Request,
+      @Path() userId: string,
+      @Query() name?: string,
+    ): Promise<User> {
+      const token = (req as any).token;
+      console.log(token);
       
-    //   return new UsersService().get(userId, name);
-    // }
+      return new UsersService().get(userId, name);
+    }
   
-    // @SuccessResponse("201", "Created") // Custom success response
-    // @Post()
-    // public async createUser(
-    //   @Body() requestBody: UserCreationParams
-    // ): Promise<void> {
-    //   this.setStatus(201); // set return status 201
-    //   new UsersService().create(requestBody);
-    //   return;
-    // }
+    @SuccessResponse("201", "Created")
+    @Post()
+    public async createUser(
+      @Body() requestBody: UserCreationParams
+    ): Promise<void> {
+      this.setStatus(201);
+      new UsersService().create(requestBody);
+      return;
+    }
   }
