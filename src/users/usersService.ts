@@ -59,7 +59,7 @@ export class UsersService extends ApiService {
 
     await this.db
     .collection("users")
-    .updateOne({ id: new ObjectId(id) }, { $set: { ...userUpdateParams } });
+    .updateOne({ _id: new ObjectId(id) }, { $set: { ...userUpdateParams } });
 
     return;
   }

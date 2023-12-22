@@ -7,6 +7,7 @@ export type User = {
     password: string;
     verified?: boolean;
     phoneNumbers: string[];
+    krogerToken?: string;
   }
 
   export type UserCreationParams = Partial<User>;

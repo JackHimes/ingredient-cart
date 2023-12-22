@@ -8,9 +8,10 @@ import {
     Query,
     Route,
     SuccessResponse,
-    Request
+    Request,
+    Patch
   } from "tsoa";
-  import { User, UserCreationParams, UserQueryParams } from "./user";
+  import { User, UserCreationParams, UserQueryParams, UserUpdateParams } from "./user";
   import { UsersService } from "./usersService";
   import verifyToken from "../middleware/verifyKrogerToken";
 
@@ -48,5 +49,13 @@ import {
       this.setStatus(201);
       new UsersService().create(requestBody);
       return;
+    }
+
+    @Patch("{userId}")
+    public async updateUser(
+      @Path() userId: string,
+      @Body() body: UserUpdateParams
+    ): Promise<void> {
+      return await new UsersService().update(userId, body);
     }
   }
