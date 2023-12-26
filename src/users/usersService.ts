@@ -4,7 +4,6 @@ import { User, UserCreationParams, UserQueryParams, UserUpdateParams } from "./u
 import { hash } from "bcrypt";
 import  ApiError  from "../lib/ApiError";
 
-// A post request should not contain an id.
 
 export class UsersService extends ApiService {
   constructor() {
