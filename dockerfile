@@ -1,19 +1,23 @@
-# pip3 install recipe-scrapers
+FROM node:21-alpine3.18
 
-FROM node:18-alpine
+ARG environment=production
+ARG mongo_db_url
 
-WORKDIR /
+ENV ENVIRONMENT=$environment
+ENV MONGO_DB_URL=$mongo_db_url
 
-ENV \
-	NODE_ENV=production \
-	PORT=3333
-
-EXPOSE ${PORT}
+WORKDIR /src
 
 COPY package*.json ./
+
 RUN npm ci
-COPY . .
+
+ADD . /src
+
 RUN npm run build
 
+ADD . ./build
 
-CMD [ "node", "build/src/server.js"]
+EXPOSE 3333
+
+CMD ["npm", "run", "start"]

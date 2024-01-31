@@ -3,7 +3,7 @@ import { app } from "./app";
 import { iocContainer } from "./ioc";
 import { MongoService } from "./services/mongoService";
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3333;
 const INGREDIENT_CART_DATABASE = 'ingredient-cart'
 
 app.listen(port, () => {
