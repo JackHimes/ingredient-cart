@@ -32,7 +32,15 @@ export class TaskService {
   
       python.on('close', (code) => {
         console.log(`child process close all stdio with code ${code}`);
-        resolve({ result: JSON.parse(result) })
+        if(result){
+          try {
+            const parsedResult = JSON.parse(result);
+            resolve({ result: parsedResult });
+          } catch (error) {
+            console.error('Error parsing JSON:', error);
+            resolve({ result: null });
+          }      
+        }
       });
     })
     

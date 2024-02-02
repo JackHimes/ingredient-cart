@@ -1,12 +1,15 @@
 import { RegisterRoutes } from "../build/routes";
 import express, { Response as ExResponse, Request as ExRequest, NextFunction, json, urlencoded } from "express";
 import swaggerUi from "swagger-ui-express";
+import cors from 'cors';
 import { ValidateError } from "tsoa";
 import dotenv from "dotenv"
 // import { load } from 'ts-dotenv';
 // https://github.com/LeoBakerHytch/ts-dotenv 
 
 export const app = express();
+
+app.use(cors());
 
 // Use body parser to read sent json payloads
 app.use(
