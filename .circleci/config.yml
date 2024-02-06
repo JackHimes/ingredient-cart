@@ -1,0 +1,60 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.1.0
+  aws-ecr: circleci/aws-ecr@7.0.0
+  aws-ecs: circleci/aws-ecs@1.1.0
+  slack: circleci/slack@3.4.2
+workflows:
+  build_and_push_image:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          context: aws
+          name: build-staging
+          filters:
+            branches:
+              ignore:
+                - master
+          create-repo: true
+          profile-name: myProfileName
+          checkout: true
+          repo: ingredient-cart
+          tag: "staging-latest,staging.$CIRCLE_WORKFLOW_ID"
+          extra-build-args: "--build-arg environment=staging --build-arg mongo_db_url=$MONGO_DB_URL"
+      - aws-ecr/build-and-push-image:
+          context: aws
+          name: build-prod
+          filters:
+            branches:
+              only:
+                - master
+          create-repo: true
+          profile-name: myProfileName
+          checkout: true
+          repo: ingredient-cart
+          tag: "latest,prod.$CIRCLE_WORKFLOW_ID"
+          extra-build-args: "--build-arg mongo_db_url=$MONGO_DB_URL"
+      - aws-ecs/deploy-service-update:
+          context: aws
+          name: staging-deploy
+          filters:
+            branches:
+              ignore: master
+          requires:
+            - build-staging
+          family: "ingredient-cart-prod"
+          cluster-name: "ingredient-cart-cluster"
+          service-name: "ingredient-cart-prod"
+          container-image-name-updates:
+            "container=ingredient-cart-prod,tag=staging.$CIRCLE_WORKFLOW_ID"
+      - aws-ecs/deploy-service-update:
+          context: aws
+          name: prod-deploy
+          filters:
+            branches:
+              only: master
+          requires:
+            - build-prod
+          family: "ingredient-cart-prod"
+          cluster-name: "ingredient-cart-cluster"
+          service-name: "ingredient-cart-prod"
+          container-image-name-updates: "container=ingredient-cart-prod,tag=prod.$CIRCLE_WORKFLOW_ID"

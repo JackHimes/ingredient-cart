@@ -50,5 +50,9 @@ app.use("/docs", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
   );
 });
 
+app.use("/ping", (_req: ExRequest, res: ExResponse) => {
+  return res.send("ok");
+});
+
 
 RegisterRoutes(app);
