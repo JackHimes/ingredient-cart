@@ -18,7 +18,7 @@ workflows:
           profile-name: myProfileName
           checkout: true
           repo: ingredient-cart
-          tag: "staging-latest"
+          tag: "staging.$CIRCLE_WORKFLOW_ID"
           extra-build-args: "--build-arg environment=staging --build-arg mongo_db_url=$MONGO_DB_URL"
       - aws-ecr/build-and-push-image:
           context: aws
@@ -31,7 +31,7 @@ workflows:
           profile-name: myProfileName
           checkout: true
           repo: ingredient-cart
-          tag: "latest"
+          tag: "prod.$CIRCLE_WORKFLOW_ID"
           extra-build-args: "--build-arg mongo_db_url=$MONGO_DB_URL"
       - aws-ecs/deploy-service-update:
           context: aws
