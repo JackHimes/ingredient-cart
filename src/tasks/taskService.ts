@@ -14,11 +14,12 @@ export class TaskService {
     return result
   }
 
-  private runPythonScript(scriptName: string, recipeUrl = 'https://www.allrecipes.com/recipe/158968/spinach-and-feta-turkey-burgers/'): Promise<TaskResult> {
+  private runPythonScript(scriptName: string, recipeUrl?: string): Promise<TaskResult> {
     return new Promise((resolve, reject) => {
       let result: any;
-
-      const python = spawn('python3', [`./src/tasks/scripts/${scriptName}.py`, recipeUrl]);
+      
+      const args = [`./src/tasks/scripts/${scriptName}.py`, recipeUrl].filter(Boolean) as string[];
+      const python = spawn('python3', args);
 
       python.stdout.on('data', function (data) {
         console.log('Pipe data from python script ...');
