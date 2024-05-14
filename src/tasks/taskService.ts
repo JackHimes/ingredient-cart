@@ -1,46 +1,56 @@
-import { spawn } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { TaskResult } from "./task";
 
 
 export class TaskService {
-  public async runScript(scriptName: string, recipeUrl?: string): Promise<TaskResult> {
-    let result: TaskResult
-    try {
-      result = await this.runPythonScript(scriptName, recipeUrl); 
-    } catch (error) {
-      result = { result: error }
-    }
+  public spawn: typeof spawn = spawn;
 
-    return result
+  public getTestMessage(): string {
+    return "Testing TaskService";
+  }
+
+  public async runScript(scriptName: string, recipeUrl?: string): Promise<TaskResult> {
+    try {
+      const result = await this.runPythonScript(scriptName, recipeUrl);
+      return { result };
+    } catch (error) {
+      console.error('Script execution failed:', error);
+      return { result: null };
+    }
   }
 
   private runPythonScript(scriptName: string, recipeUrl?: string): Promise<TaskResult> {
     return new Promise((resolve, reject) => {
-      let result: any;
-      
       const args = [`./src/tasks/scripts/${scriptName}.py`, recipeUrl].filter(Boolean) as string[];
-      const python = spawn('python3', args);
+      const python: ChildProcessWithoutNullStreams = this.spawn('python3', args);
+      let rawData = '';
 
-      python.stdout.on('data', function (data) {
-        console.log('Pipe data from python script ...');
-        result = data.toString().replace(/'/g, '"').replace(/\n/g,'').replace('None', 'null');
+      python.stdout.on('data', (data: Buffer) => {
+        console.log('Receiving data from python script...');
+        rawData += data.toString();  // Accumulate data in rawData
       });
 
-      python.on('error', (err) => {
-        console.log(err);
-        reject(err)
-      })
-  
-      python.on('close', (code) => {
-        console.log(`child process close all stdio with code ${code}`);
-        if(result){
+      python.stderr.on('data', (data: Buffer) => {
+        console.error('Error from python script:', data.toString());
+      });
+
+      python.on('error', (err: Error) => {
+        console.error('Failed to start python script:', err);
+        reject(err);
+      });
+
+      python.on('close', (code: number) => {
+        console.log(`Python script closed with code ${code}`);
+        if (rawData) {
           try {
-            const parsedResult = JSON.parse(result);
-            resolve({ result: parsedResult });
+            const result = JSON.parse(rawData);
+            resolve(result);
           } catch (error) {
             console.error('Error parsing JSON:', error);
-            resolve({ result: null });
-          }      
+            reject(error);
+          }
+        } else {
+          reject(new Error('No data received from Python script'));
         }
       });
     })
