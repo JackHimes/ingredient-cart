@@ -4,16 +4,23 @@ import { RecipesService } from "./recipesService";
 
 @Route("recipes")
 export class RecipesController extends Controller {
+  private recipesService: RecipesService;
+
+  constructor(recipesService?: RecipesService) {
+    super();
+    this.recipesService = recipesService || new RecipesService();
+  }
+
   @Get()
   public async getRecipes(): Promise<Recipe[]> {
-    return new RecipesService().find();
+    return this.recipesService.find();
   }
 
   @SuccessResponse("201", "Recipe Created")
   @Post()
   public async createRecipe(@Body() recipeParams: RecipeCreationParams): Promise<void> {
     this.setStatus(201);
-    new RecipesService().create(recipeParams);
+    this.recipesService.create(recipeParams);
     return;
   }
 }
