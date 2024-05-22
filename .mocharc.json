@@ -1,12 +1,10 @@
 {
-    "require": "ts-node/register",
+    "require": ["ts-node/register", "dotenv/config"],
     "extension": ["ts"],
     "spec": "src/tests/**/*.test.ts",
     "watch-files": ["src/**/*.ts", "tests/**/*.ts"],
     "watch-ignore": ["node_modules"],
     "ts-node": {
-        "project": "tsconfig.test.json"
-      }
-    
+      "project": "tsconfig.test.json"
+    }
   }
-  
