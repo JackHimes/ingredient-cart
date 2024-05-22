@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import { expect } from 'chai';
-import { container } from 'tsyringe';
 import { RecipesController } from '../../recipes/recipesController';
 import { RecipesService } from '../../recipes/recipesService';
 import { Recipe, RecipeCreationParams } from '../../recipes/recipe';
@@ -13,12 +12,10 @@ describe('RecipesController', function() {
 
   beforeEach(function() {
     recipesService = sinon.createStubInstance(RecipesService);
-    container.registerInstance(RecipesService, recipesService);
-    recipesController = new RecipesController(recipesService);
+    recipesController = new RecipesController(recipesService); 
   });
 
   afterEach(function() {
-    container.clearInstances();
     sinon.restore();
   });
 
