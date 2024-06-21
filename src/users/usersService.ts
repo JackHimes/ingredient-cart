@@ -5,7 +5,8 @@ import {
   UserCreationParams,
   UserQueryParams,
   UserUpdateParams,
-} from "./user";
+  RecentRecipe
+} from "../types/sharedTypes";
 import { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import axios from "axios";
@@ -166,5 +167,79 @@ export class UsersService extends ApiService {
     await this.db.collection("users").deleteOne({ id: new ObjectId(id) });
 
     return;
+  }
+
+  public async addFavoriteRecipe(userEmail: string, recipeId: string): Promise<void> {
+    await this.db.collection("users").updateOne(
+      { email: userEmail },
+      { $addToSet: { favoriteRecipes: new ObjectId(recipeId) } }
+    );
+  }
+
+  public async removeFavoriteRecipe(userEmail: string, recipeId: string): Promise<void> {
+    await this.db.collection("users").updateOne(
+      { email: userEmail },
+      { $pull: { favoriteRecipes: new ObjectId(recipeId) } }
+    );
+  }
+
+  public async getFavoriteRecipes(userEmail: string): Promise<string[]> {
+    const user = await this.db.collection("users").findOne({ email: userEmail });
+    if (user && Array.isArray(user.favoriteRecipes)) {
+      return user.favoriteRecipes.map((id: ObjectId) => id.toHexString());
+    }
+    return [];
+  }
+
+  public async isFavoriteRecipe(userEmail: string, recipeId: string): Promise<boolean> {
+    const user = await this.db.collection("users").findOne({
+      email: userEmail,
+      favoriteRecipes: new ObjectId(recipeId)
+    });
+    return !!user;
+  }
+
+  public async addRecentRecipe(userEmail: string, recipeId: string): Promise<void> {
+    const newRecent: RecentRecipe = { recipeId: new ObjectId(recipeId), viewedAt: new Date() };
+    
+    await this.db.collection("users").updateOne(
+      { email: userEmail },
+      [
+        { 
+          $set: { 
+            recentRecipes: {
+              $cond: {
+                if: { $in: [new ObjectId(recipeId), "$recentRecipes.recipeId"] },
+                then: {
+                  $concatArrays: [
+                    [newRecent],
+                    {
+                      $filter: {
+                        input: "$recentRecipes",
+                        cond: { $ne: ["$$this.recipeId", new ObjectId(recipeId)] }
+                      }
+                    }
+                  ]
+                },
+                else: {
+                  $slice: [
+                    { $concatArrays: [[newRecent], "$recentRecipes"] },
+                    10
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    );
+  }
+
+  public async getRecentRecipes(userEmail: string): Promise<{ recipeId: string; viewedAt: Date }[]> {
+    const user = await this.db.collection("users").findOne({ email: userEmail });
+    return user?.recentRecipes?.map((recent: RecentRecipe) => ({
+      recipeId: recent.recipeId.toHexString(),
+      viewedAt: recent.viewedAt
+    })) || [];
   }
 }

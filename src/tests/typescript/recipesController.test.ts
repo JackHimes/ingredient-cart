@@ -12,7 +12,8 @@ describe('RecipesController', function() {
 
   beforeEach(function() {
     recipesService = sinon.createStubInstance(RecipesService);
-    recipesController = new RecipesController(recipesService); 
+    recipesController = new RecipesController();
+    (recipesController as any).recipesService = recipesService; // Inject the stubbed service
   });
 
   afterEach(function() {
@@ -28,12 +29,15 @@ describe('RecipesController', function() {
         instructions: ['Step 1', 'Step 2'],
         url: 'http://example.com',
         image: 'http://example.com/image.jpg',
+        popularity: 5,
+        description: 'A test recipe',
+        createdBy: 'testuser',
       },
     ];
 
     recipesService.find.resolves(expectedRecipes);
 
-    const recipes = await recipesController.getRecipes();
+    const recipes = await recipesController.findRecipes();
     expect(recipes).to.deep.equal(expectedRecipes);
     sinon.assert.calledOnce(recipesService.find);
   });
@@ -45,9 +49,32 @@ describe('RecipesController', function() {
       instructions: ['Step 1'],
       url: 'http://example.com',
       image: 'http://example.com/image.jpg',
+      popularity: 5,
+      description: 'A test recipe',
     };
 
     await recipesController.createRecipe(newRecipe);
     sinon.assert.calledOnceWithExactly(recipesService.create, newRecipe);
+  });
+
+  it('should get a recipe by id', async function() {
+    const recipeId = new ObjectId().toString();
+    const expectedRecipe: Recipe = {
+      _id: new ObjectId(recipeId),
+      title: 'Test Recipe',
+      ingredients: ['Ingredient 1', 'Ingredient 2'],
+      instructions: ['Step 1', 'Step 2'],
+      url: 'http://example.com',
+      image: 'http://example.com/image.jpg',
+      popularity: 5,
+      description: 'A test recipe',
+      createdBy: 'testuser',
+    };
+
+    recipesService.get.resolves(expectedRecipe);
+
+    const recipe = await recipesController.getRecipe(recipeId);
+    expect(recipe).to.deep.equal(expectedRecipe);
+    sinon.assert.calledOnceWithExactly(recipesService.get, recipeId);
   });
 });

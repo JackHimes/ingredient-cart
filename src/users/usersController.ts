@@ -8,6 +8,7 @@ import {
   Route,
   SuccessResponse,
   Patch,
+  Delete,
 } from "tsoa";
 import {
   User,
@@ -75,5 +76,51 @@ export class UsersController extends Controller {
     @Body() body: UserUpdateParams
   ): Promise<void> {
     return await new UsersService().update(userId, body);
+  }
+
+  @SuccessResponse("201", "Added")
+  @Post("{userEmail}/favorites/{recipeId}")
+  public async addFavoriteRecipe(
+    @Path() userEmail: string,
+    @Path() recipeId: string
+  ): Promise<void> {
+    await new UsersService().addFavoriteRecipe(userEmail, recipeId);
+    this.setStatus(201);
+  }
+
+  @Delete("{userEmail}/favorites/{recipeId}")
+  public async removeFavoriteRecipe(
+    @Path() userEmail: string,
+    @Path() recipeId: string
+  ): Promise<void> {
+    await new UsersService().removeFavoriteRecipe(userEmail, recipeId);
+  }
+
+  @Get("{userEmail}/favorites")
+  public async getFavoriteRecipes(@Path() userEmail: string): Promise<string[]> {
+    return new UsersService().getFavoriteRecipes(userEmail);
+  }
+
+  @Get("{userEmail}/favorites/{recipeId}")
+  public async isFavoriteRecipe(
+    @Path() userEmail: string,
+    @Path() recipeId: string
+  ): Promise<boolean> {
+    return new UsersService().isFavoriteRecipe(userEmail, recipeId);
+  }
+
+  @SuccessResponse("201", "Added")
+  @Post("{userEmail}/recent/{recipeId}")
+  public async addRecentRecipe(
+    @Path() userEmail: string,
+    @Path() recipeId: string
+  ): Promise<void> {
+    await new UsersService().addRecentRecipe(userEmail, recipeId);
+    this.setStatus(201);
+  }
+
+  @Get("{userEmail}/recent")
+  public async getRecentRecipes(@Path() userEmail: string): Promise<{ recipeId: string; viewedAt: Date }[]> {
+    return new UsersService().getRecentRecipes(userEmail);
   }
 }
