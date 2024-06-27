@@ -7,6 +7,9 @@ export type Recipe = {
     instructions: string[];
     url: string;
     image: string;
+    popularity: number;
+    createdBy: string; 
+    description?: string;
   }
 
   export type RecipeCreationParams = Partial<Recipe>;

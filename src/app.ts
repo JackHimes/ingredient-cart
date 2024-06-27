@@ -2,6 +2,8 @@ import { RegisterRoutes } from "../build/routes";
 import express, { Response as ExResponse, Request as ExRequest, NextFunction, json, urlencoded } from "express";
 import swaggerUi from "swagger-ui-express";
 import cors from 'cors';
+import productRoutes from './routes/productRoutes';
+import cartRoutes from './routes/cartRoutes';
 import { ValidateError } from "tsoa";
 import dotenv from "dotenv"
 // import { load } from 'ts-dotenv';
@@ -42,6 +44,9 @@ app.use(function errorHandler(
 
   next();
 });
+
+app.use('/api', productRoutes);
+app.use('/api', cartRoutes);
 
 // Use body parser to read sent json payloads
 app.use("/docs", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
