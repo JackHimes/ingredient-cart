@@ -17,6 +17,7 @@ import {
   UserUpdateParams,
 } from "./user";
 import { UsersService } from "./usersService";
+import ApiError from "../lib/ApiError";
 
 @Route("users")
 export class UsersController extends Controller {
@@ -59,16 +60,25 @@ export class UsersController extends Controller {
   ): Promise<User> {
     return new UsersService().get(userId, name);
   }
-
+  
   @SuccessResponse("201", "Created")
   @Post()
-  public async createUser(
-    @Body() requestBody: UserCreationParams
-  ): Promise<void> {
-    this.setStatus(201);
-    await new UsersService().create(requestBody);
-    return;
+  public async createUser(@Body() requestBody: UserCreationParams): Promise<void> {
+    try {
+      this.setStatus(201);
+      await new UsersService().create(requestBody);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      if (error instanceof ApiError) {
+        this.setStatus(error.statusCode);
+        throw error;
+      } else {
+        this.setStatus(400);
+        throw new ApiError("ValidationError", 400, "Invalid user data");
+      }
+    }
   }
+  
 
   @Patch("{userId}")
   public async updateUser(

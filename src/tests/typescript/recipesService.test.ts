@@ -47,6 +47,7 @@ describe('RecipesService', function() {
       url: 'http://example.com',
       image: 'http://example.com/image.jpg',
       description: 'A test recipe',
+      createdBy: 'testuser',
     };
     const createdRecipe = await recipesService.create(recipe);
     expect(createdRecipe.popularity).to.equal(0); 
@@ -62,8 +63,8 @@ describe('RecipesService', function() {
       instructions: ['Step 1', 'Step 2'],
       url: 'http://example.com',
       image: 'http://example.com/image.jpg',
-      popularity: 5,
       description: 'A test recipe',
+      createdBy: 'testuser',
     };
     const createdRecipe = await recipesService.create(recipe);
     const fetchedRecipe = await recipesService.get(createdRecipe._id.toString());

@@ -12,43 +12,44 @@ export class RecipesService extends ApiService {
     super();
   }
 
-  public async find(query: RecipeQueryParams): Promise<Recipe[]> {
-    let recipes = await this.db.collection("recipes").find(query).toArray();
-    return recipes as unknown as Recipe[];
-  }
-
-  public async get(id: string): Promise<Recipe> {
-    let query: RecipeQueryParams = { _id: new ObjectId(id) };
-    let result = (await this.db
-      .collection("recipes")
-      .findOne(query)) as unknown as Recipe;
-    return result;
-  }
-  
   public async create(recipeData: RecipeCreationParams): Promise<Recipe> {
-    const newRecipe = {
-      ...recipeData,
+    const newRecipe: Recipe = {
       _id: new ObjectId(),
-      createdAt: new Date(),
+      ...recipeData,
       popularity: 0
     };
 
     await this.db.collection("recipes").insertOne(newRecipe);
-    return newRecipe as Recipe;
+    return newRecipe;
   }
 
-  public async update(
-    id: string,
-    recipeUpdateParams: RecipeUpdateParams
-  ): Promise<void> {
+  public async update(id: string, recipeUpdateParams: RecipeUpdateParams): Promise<void> {
     await this.db
       .collection("recipes")
       .updateOne(
         { _id: new ObjectId(id) },
         { $set: { ...recipeUpdateParams } }
       );
-    return;
   }
+
+  public async find(query: RecipeQueryParams): Promise<Recipe[]> {
+    let dbQuery: any = {};
+    if (query.title) {
+      dbQuery.title = { $regex: query.title, $options: 'i' };
+    }
+    let recipes = await this.db.collection("recipes").find(dbQuery).toArray();
+    return recipes as Recipe[];
+  }
+
+  public async get(id: string): Promise<Recipe> {
+    let query: RecipeQueryParams = { _id: new ObjectId(id) };
+    let result = await this.db.collection("recipes").findOne(query);
+    if (!result) {
+      throw new Error("Recipe not found");
+    }
+    return result as Recipe;
+  }
+
 
   public async getPopularRecipes(limit: number): Promise<Recipe[]> {
     try {
