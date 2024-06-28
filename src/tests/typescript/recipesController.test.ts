@@ -49,8 +49,8 @@ describe('RecipesController', function() {
       instructions: ['Step 1'],
       url: 'http://example.com',
       image: 'http://example.com/image.jpg',
-      popularity: 5,
       description: 'A test recipe',
+      createdBy: 'testuser',
     };
 
     await recipesController.createRecipe(newRecipe);
