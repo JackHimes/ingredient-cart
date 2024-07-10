@@ -123,26 +123,36 @@ export class UsersService extends ApiService {
   }
 
   public async create(userCreationParams: UserCreationParams): Promise<User> {
-    let user = await this.db
+    // Validate required fields
+    if (!userCreationParams.email) {
+      throw new ApiError("ValidationError", 400, "Email is required");
+    }
+    if (!userCreationParams.fullName) {
+      throw new ApiError("ValidationError", 400, "Full name is required");
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userCreationParams.email)) {
+      throw new ApiError("ValidationError", 400, "Invalid email format");
+    }
+
+    let existingUser = await this.db
       .collection("users")
       .findOne({ email: userCreationParams.email });
 
-    if (!user) {
-      if (userCreationParams.password) {
-        userCreationParams.password = await hash(
-          userCreationParams.password as string,
-          10
-        );
-      }
+    if (!existingUser) {
+      const newUser: UserCreationParams = {
+        ...userCreationParams,
+        verified: userCreationParams.verified ?? false,
+        favoriteRecipes: userCreationParams.favoriteRecipes ?? [],
+        recentRecipes: userCreationParams.recentRecipes ?? []
+      };
 
-      await this.db.collection("users").insertOne({
-        ...userCreationParams,
-        verified: false,
-      });
-      return {
-        ...userCreationParams,
-        verified: false,
-      } as User;
+      console.log("Inserting new user:", JSON.stringify(newUser, null, 2));
+      const result = await this.db.collection("users").insertOne(newUser);
+      console.log("Insert result:", JSON.stringify(result, null, 2));
+      return { ...newUser, _id: result.insertedId } as User;
     } else {
       throw new ApiError("DuplicateEmail", 400, "Email Already Exists");
     }
