@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Path,
-  Query,
-  Route,
-} from "tsoa";
-
+import { Controller, Get, Path, Query, Route } from "tsoa";
 import { TaskService } from "./taskService";
 import { TaskResult } from "./task";
 

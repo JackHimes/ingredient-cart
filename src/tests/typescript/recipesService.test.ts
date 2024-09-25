@@ -68,6 +68,9 @@ describe('RecipesService', function() {
     };
     const createdRecipe = await recipesService.create(recipe);
     const fetchedRecipe = await recipesService.get(createdRecipe._id.toString());
-    expect(fetchedRecipe).to.deep.equal({ ...recipe, _id: createdRecipe._id });
-  });
+    expect(fetchedRecipe).to.deep.equal({ 
+      ...recipe, 
+      _id: createdRecipe._id, 
+      popularity: createdRecipe.popularity || 0 
+    });  });
 });
