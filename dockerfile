@@ -16,8 +16,6 @@ ADD . /src
 
 RUN npm run build
 
-ADD . ./build
-
 EXPOSE 3333
 
 CMD ["npm", "run", "start"]

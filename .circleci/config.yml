@@ -9,52 +9,26 @@ workflows:
     jobs:
       - aws-ecr/build-and-push-image:
           context: aws
-          name: build-staging
-          filters:
-            branches:
-              ignore:
-                - master
-          create-repo: true
-          profile-name: myProfileName
-          checkout: true
-          repo: ingredient-cart
-          tag: "staging.$CIRCLE_WORKFLOW_ID"
-          extra-build-args: "--build-arg environment=staging --build-arg mongo_db_url=$MONGO_DB_URL"
-      - aws-ecr/build-and-push-image:
-          context: aws
           name: build-prod
           filters:
             branches:
               only:
-                - master
+                - deploymeny-prep
           create-repo: true
           profile-name: myProfileName
           checkout: true
-          repo: ingredient-cart
+          repo: ingredient-cart-backend
           tag: "prod.$CIRCLE_WORKFLOW_ID"
           extra-build-args: "--build-arg mongo_db_url=$MONGO_DB_URL"
-      - aws-ecs/deploy-service-update:
-          context: aws
-          name: staging-deploy
-          filters:
-            branches:
-              ignore: master
-          requires:
-            - build-staging
-          family: "ingredient-cart-prod"
-          cluster-name: "ingredient-cart-cluster"
-          service-name: "ingredient-cart-prod"
-          container-image-name-updates:
-            "container=ingredient-cart-prod,tag=staging.$CIRCLE_WORKFLOW_ID"
       - aws-ecs/deploy-service-update:
           context: aws
           name: prod-deploy
           filters:
             branches:
-              only: master
+              only: deploymeny-prep
           requires:
             - build-prod
-          family: "ingredient-cart-prod"
-          cluster-name: "ingredient-cart-cluster"
-          service-name: "ingredient-cart-prod"
+          family: "ingredient-cart-api-production"
+          cluster-name: "prod-cluster"
+          service-name: "ingredient-cart-production"
           container-image-name-updates: "container=ingredient-cart-prod,tag=prod.$CIRCLE_WORKFLOW_ID"
