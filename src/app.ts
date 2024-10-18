@@ -45,6 +45,10 @@ app.use(function errorHandler(
   next();
 });
 
+app.get('/', (_req: ExRequest, res: ExResponse) => {
+  res.send('Welcome to the Ingredient Cart Backend API');
+});
+
 app.use('/api', productRoutes);
 app.use('/api', cartRoutes);
 

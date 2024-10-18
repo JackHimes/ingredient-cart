@@ -1,22 +1,26 @@
 FROM node:21-alpine3.18
 
 ARG environment=production
-ARG mongo_db_url
+ARG mongodb_uri
 
 ENV ENVIRONMENT=$environment
-ENV MONGO_DB_URL=$mongo_db_url
+ENV MONGODB_URI=$mongodb_uri
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
 
 WORKDIR /src
 
 COPY package*.json ./
 
+# Install dependencies
 RUN npm ci
 
-ADD . /src
+# Copy the rest of the application
+COPY . .
 
+# Build the application
 RUN npm run build
-
-ADD . ./build
 
 EXPOSE 3333
 

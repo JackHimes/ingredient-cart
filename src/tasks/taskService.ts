@@ -33,14 +33,14 @@ export class TaskService {
       throw new Error('Recipe URL is required');
     }
     
-    const apiUrl = `http://127.0.0.1:5000${endpoint}?recipeUrl=${encodeURIComponent(recipeUrl)}`;
+    const apiUrl = `http://0.0.0.0:8000${endpoint}?recipeUrl=${encodeURIComponent(recipeUrl)}`;
     const response = await axios.get(apiUrl);
     return response.data;
   }
 
   // Function to handle POST requests (for process/parse_ingredient)
   private async callPyServiceApiPost(endpoint: string, data: any): Promise<any> {
-    const apiUrl = `http://127.0.0.1:5000${endpoint}`;
+    const apiUrl = `http://0.0.0.0:8000${endpoint}`;
     const response = await axios.post(apiUrl, data, {
       headers: {
         'Content-Type': 'application/json',
