@@ -4,6 +4,8 @@ orbs:
   aws-ecr: circleci/aws-ecr@7.0.0
   aws-ecs: circleci/aws-ecs@1.1.0
   slack: circleci/slack@3.4.2
+machine:
+  image: ubuntu-2204:current
 workflows:
   build_and_push_image:
     jobs:
@@ -20,8 +22,6 @@ workflows:
           repo: ingredient-cart-backend
           tag: "prod.$CIRCLE_WORKFLOW_ID"
           extra-build-args: "--build-arg mongo_db_url=$MONGO_DB_URL"
-          machine:
-            image: ubuntu-2204:current
       - aws-ecs/deploy-service-update:
           context: aws
           name: prod-deploy
