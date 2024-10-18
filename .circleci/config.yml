@@ -20,6 +20,8 @@ workflows:
           repo: ingredient-cart-backend
           tag: "prod.$CIRCLE_WORKFLOW_ID"
           extra-build-args: "--build-arg mongo_db_url=$MONGO_DB_URL"
+          machine:
+            image: ubuntu-2204:current
       - aws-ecs/deploy-service-update:
           context: aws
           name: prod-deploy
