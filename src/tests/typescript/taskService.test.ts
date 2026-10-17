@@ -23,7 +23,7 @@ describe('TaskService', () => {
 
   it('should call scrape_recipe endpoint with GET request', async () => {
     const mockRecipeUrl = 'https://www.101cookbooks.com/nicoise-salad/';
-    mock.onGet(`http://127.0.0.1:5000/tasks/scrape_recipe?recipeUrl=${encodeURIComponent(mockRecipeUrl)}`)
+    mock.onGet(`http://0.0.0.0:8000/tasks/scrape_recipe?recipeUrl=${encodeURIComponent(mockRecipeUrl)}`)
         .reply(200, { title: 'Nicoise Salad', ingredients: ['Tuna', 'Potatoes'] });
 
     const result = await taskService.runScript('scrape_recipe', mockRecipeUrl);
@@ -33,7 +33,7 @@ describe('TaskService', () => {
 
   it('should call process endpoint with POST request', async () => {
     const mockText = 'Add 2 cups of chopped onions and 1 teaspoon of salt.';
-    mock.onPost('http://127.0.0.1:5000/process', { text: mockText })
+    mock.onPost('http://0.0.0.0:8000/process', { text: mockText })
         .reply(200, { entities: [{ text: '2 cups', label: 'Quantity' }, { text: 'onions', label: 'Ingredient' }] });
 
     const result = await taskService.runScript('parse_ingredient', mockText);

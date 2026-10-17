@@ -107,11 +107,40 @@ export class UsersService extends ApiService {
     }
   }
 
+  // Exchanges the OAuth code from Kroger's redirect for tokens and saves them on the user
+  public async exchangeKrogerCode(email: string, code: string): Promise<string> {
+    let tokenData: { access_token: string; refresh_token: string };
+    try {
+      const response = await axios.post(
+        "https://api.kroger.com/v1/connect/oauth2/token",
+        new URLSearchParams({
+          grant_type: "authorization_code",
+          code: code,
+          redirect_uri: process.env.KROGER_REDIRECT_URI!,
+        }).toString(),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${process.env.KROGER_API_TOKEN}`,
+          },
+        }
+      );
+      tokenData = response.data;
+    } catch (error: any) {
+      const details = error.response?.data ?? error.message;
+      console.error("Kroger code exchange failed:", details);
+      throw new ApiError("KrogerAuthFailed", 502, `Kroger rejected the authorization code: ${JSON.stringify(details)}`);
+    }
+
+    await this.updateUserToken(email, tokenData);
+    return tokenData.access_token;
+  }
+
   public async updateUserToken(
     email: string,
     tokenData: { access_token: string; refresh_token: string }
   ) {
-    await this.db.collection("users").updateOne(
+    const result = await this.db.collection("users").updateOne(
       { email: email },
       {
         $set: {
@@ -120,6 +149,9 @@ export class UsersService extends ApiService {
         },
       }
     );
+    if (result.matchedCount === 0) {
+      throw new ApiError("UserNotFound", 404, `No user found for ${email}, Kroger token was not saved`);
+    }
   }
 
   public async create(userCreationParams: UserCreationParams): Promise<User> {

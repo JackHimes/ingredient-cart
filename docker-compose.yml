@@ -1,0 +1,32 @@
+# Local stack: MongoDB + pyservice-api (scraper/NER) + this backend.
+# Expects pyservice-api checked out next to this repo (../pyservice-api).
+#
+#   docker compose up --build        # everything
+#   docker compose up mongo pyservice   # deps only, then `npm run dev` here
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  pyservice:
+    build: ../pyservice-api
+    ports:
+      - "8000:8000"
+
+  backend:
+    build: .
+    ports:
+      - "3333:3333"
+    env_file: .env
+    environment:
+      MONGO_DB_URL: mongodb://mongo:27017
+      PYSERVICE_URL: http://pyservice:8000
+    depends_on:
+      - mongo
+      - pyservice
+
+volumes:
+  mongo-data:
