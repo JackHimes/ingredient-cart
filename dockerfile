@@ -1,12 +1,6 @@
-FROM node:21-alpine3.18
+FROM node:22-alpine
 
-ARG environment=production
-ARG mongodb_uri
-
-ENV ENVIRONMENT=$environment
-ENV MONGODB_URI=$mongodb_uri
-
-# Install build dependencies
+# Build dependencies for bcrypt
 RUN apk add --no-cache python3 make g++
 
 WORKDIR /src
@@ -24,4 +18,5 @@ RUN npm run build
 
 EXPOSE 3333
 
+# Runtime config (MONGO_DB_URL, KROGER_*, PYSERVICE_URL) is passed in as env vars, see docker-compose.yml
 CMD ["npm", "run", "start"]

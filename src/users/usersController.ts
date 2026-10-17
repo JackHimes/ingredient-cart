@@ -43,6 +43,14 @@ export class UsersController extends Controller {
     });
   }
 
+  // Called by the frontend's Kroger OAuth callback page with the ?code from Kroger
+  @Post("kroger/callback")
+  public async krogerCallback(
+    @Body() body: { email: string; code: string }
+  ): Promise<string> {
+    return await new UsersService().exchangeKrogerCode(body.email, body.code);
+  }
+
   @Get()
   public async findUsers(@Query() email?: string): Promise<User[]> {
     let query: UserQueryParams = {};

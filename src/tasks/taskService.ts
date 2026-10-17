@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { TaskResult } from './task';
 
+const pyserviceUrl = () => process.env.PYSERVICE_URL || "http://0.0.0.0:8000";
+
 export class TaskService {
   public getTestMessage(): string {
     return "Testing TaskService";
@@ -33,14 +35,14 @@ export class TaskService {
       throw new Error('Recipe URL is required');
     }
     
-    const apiUrl = `http://0.0.0.0:8000${endpoint}?recipeUrl=${encodeURIComponent(recipeUrl)}`;
+    const apiUrl = `${pyserviceUrl()}${endpoint}?recipeUrl=${encodeURIComponent(recipeUrl)}`;
     const response = await axios.get(apiUrl);
     return response.data;
   }
 
   // Function to handle POST requests (for process/parse_ingredient)
   private async callPyServiceApiPost(endpoint: string, data: any): Promise<any> {
-    const apiUrl = `http://0.0.0.0:8000${endpoint}`;
+    const apiUrl = `${pyserviceUrl()}${endpoint}`;
     const response = await axios.post(apiUrl, data, {
       headers: {
         'Content-Type': 'application/json',
