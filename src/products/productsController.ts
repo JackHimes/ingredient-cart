@@ -1,5 +1,6 @@
 import {
   Body,
+  BodyProp,
   Controller,
   Get,
   Header,
@@ -35,7 +36,8 @@ export class ProductsController extends Controller {
 
   @Post("getItemsUpcs")
   public async getItemsUpcs(
-    @Body() items: string[],
+    @BodyProp() items: string[],
+    @BodyProp() locationId: string,
     @Header("Authorization") authorization?: string
   ): Promise<any> {
     const upcsArray: {
@@ -67,23 +69,34 @@ export class ProductsController extends Controller {
             processedItem = processedItem.split(" ").slice(0, 8).join(" ");
           }
 
-          const url = `https://api.kroger.com/v1/products?filter.term=${processedItem}`;
-          console.log(`Kroger API URL: ${url}`);
+          console.log(`Searching Kroger for: ${processedItem}`);
 
           try {
-            // Make the API request to Kroger
-            const response = await axios.get(url, {
+            // Make the API request to Kroger. Fulfillment info is only
+            // returned when a locationId is passed.
+            const response = await axios.get("https://api.kroger.com/v1/products", {
               headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${storedToken}`,
+              },
+              params: {
+                "filter.term": processedItem,
+                "filter.locationId": locationId,
+                // Fetch extra so we still have results after the curbside filter
+                "filter.limit": 20,
               },
             });
 
             console.log("API response received:", response.data);
 
             // Ensure there's data to process
-            if (response.data.data?.length > 0) {
-              const upcs = response.data.data.slice(0, 5).map((data: any) => {
+            const curbsideProducts = (response.data.data ?? []).filter(
+              (data: any) =>
+                data.items?.some((item: any) => item.fulfillment?.curbside)
+            );
+
+            if (curbsideProducts.length > 0) {
+              const upcs = curbsideProducts.slice(0, 5).map((data: any) => {
                 // Handle missing images or sizes
                 const thumbnailImage = data.images?.find(
                   (image: any) => image.perspective === "front"
@@ -104,7 +117,7 @@ export class ProductsController extends Controller {
 
               upcsArray.push(upcs); // Push the UPC data to the array
             } else {
-              console.warn(`No data found for item: ${processedItem}`);
+              console.warn(`No curbside products found for item: ${processedItem}`);
             }
           } catch (error) {
             console.error(`Error fetching item: ${processedItem}`, error);
