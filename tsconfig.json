@@ -34,6 +34,8 @@
     // emitDecoratorMetadata is not needed by tsoa (unless you are using Custom Middlewares)
 
     /* Advanced Options */
+    // @clerk/backend ships types that only resolve under node16/bundler resolution; don't type-check library .d.ts files
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }
 }

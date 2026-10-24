@@ -46,6 +46,8 @@ export class ProductsController extends Controller {
       description: string;
       thumbnailUrl?: string;
       size?: string;
+      price?: number;
+      promoPrice?: number;
     }[][] = [];
 
     try {
@@ -104,7 +106,13 @@ export class ProductsController extends Controller {
                 const thumbnailUrl = thumbnailImage
                   ? thumbnailImage.sizes?.[3]?.url
                   : undefined;
-                const size = data.items?.[0]?.size || undefined;
+                const curbsideItem = data.items.find(
+                  (item: any) => item.fulfillment?.curbside
+                );
+                const size = curbsideItem?.size || undefined;
+                const price = curbsideItem?.price?.regular || undefined;
+                // Kroger sends promo: 0 when the item isn't on sale
+                const promoPrice = curbsideItem?.price?.promo || undefined;
 
                 return {
                   item: processedItem,
@@ -112,6 +120,8 @@ export class ProductsController extends Controller {
                   description: data.description,
                   thumbnailUrl: thumbnailUrl,
                   size: size,
+                  price: price,
+                  promoPrice: promoPrice,
                 };
               });
 
